@@ -8,7 +8,7 @@ use axum::{
     extract::{Path, State},
     http::StatusCode,
     response::{Html, IntoResponse},
-    routing::get,
+    routing::{get, post},
 };
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -20,7 +20,8 @@ async fn main() {
     // build our application with a route
     let app = Router::new()
         .route("/", get(handler))
-        .route("/games", get(get_games).post(add_games))
+        .route("/games", get(get_games).post(add_game))
+        .route("/games/{id}/accept", post(accept_game))
         .with_state(db);
 
     // run it
@@ -57,7 +58,7 @@ struct CreateGame {
     player1_id: Uuid,
 }
 
-async fn add_games(State(db): State<Db>, Json(input): Json<CreateGame>) -> impl IntoResponse {
+async fn add_game(State(db): State<Db>, Json(input): Json<CreateGame>) -> impl IntoResponse {
     let mut db = db.lock().unwrap();
 
     if let Some(game) = db
@@ -91,5 +92,11 @@ async fn accept_game(
 ) -> impl IntoResponse {
     let mut db = db.lock().unwrap();
 
-    (StatusCode::ACCEPTED)
+    let Some(game) = db.get_mut(&game_id) else {
+        return StatusCode::NOT_FOUND;
+    };
+
+    game.player2_id = Some(input.player2_id);
+
+    StatusCode::ACCEPTED
 }
