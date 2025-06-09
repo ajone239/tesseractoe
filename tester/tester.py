@@ -1,5 +1,6 @@
 import requests
 import uuid
+import sys
 
 BASE_URL = "http://127.0.0.1:3000"
 
@@ -38,24 +39,38 @@ def play_game(game_id, player_id, player_move):
 
 if __name__ == "__main__":
     game_id, player1_id = create_game()
-    if game_id:
-        player2_id = str(uuid.uuid4())  # Generate a random second player ID
-        accept_game(game_id, player2_id)
-        get_game_status(game_id)
+    if not game_id:
+        sys.exit()
 
-        play_game(game_id, player1_id, 0)  # Example move
-        play_game(game_id, player1_id, 1)  # Double Move
-        play_game(game_id, player2_id, 0)  # Redo Move
+    player2_id = str(uuid.uuid4())  # Generate a random second player ID
+    accept_game(game_id, player2_id)
+    get_game_status(game_id)
 
-        play_game(game_id, player2_id, 4)
-        play_game(game_id, player1_id, 1)
+    print()
 
-        play_game(game_id, player2_id, 5)
-        play_game(game_id, player1_id, 2)
+    play_game(game_id, player1_id, 0)  # Example move
+    play_game(game_id, player1_id, 1)  # Double Move
+    play_game(game_id, player2_id, 0)  # Redo Move
 
-        play_game(game_id, player2_id, 6)
-        play_game(game_id, player1_id, 3)
+    print()
 
-        play_game(game_id, player2_id, 7) # Shouldnt work
+    play_game(game_id, player2_id, 4)
+    play_game(game_id, player1_id, 1)
 
-        get_game_status(game_id)
+    print()
+
+    play_game(game_id, player2_id, 5)
+    play_game(game_id, player1_id, 2)
+
+    print()
+
+    play_game(game_id, player2_id, 6)
+    play_game(game_id, player1_id, 3)
+
+    print()
+
+    play_game(game_id, player2_id, 7) # Shouldnt work
+
+    print()
+
+    get_game_status(game_id)
