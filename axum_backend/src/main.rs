@@ -13,6 +13,8 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+use axum_backend::game::GameState;
+
 #[tokio::main]
 async fn main() {
     let db = Db::default();
@@ -37,25 +39,6 @@ async fn main() {
 
 async fn handler() -> Html<&'static str> {
     Html("<h1>Hello, World!</h1>")
-}
-
-#[derive(Default, Serialize, Clone)]
-enum GameState {
-    #[default]
-    Started,
-    Playing,
-    NaughtWin,
-    CrossWin,
-    Draw,
-}
-
-impl GameState {
-    fn is_terminal(&self) -> bool {
-        match self {
-            Self::NaughtWin | Self::CrossWin | Self::Draw => true,
-            _ => false,
-        }
-    }
 }
 
 #[derive(Default, Serialize, Clone)]
