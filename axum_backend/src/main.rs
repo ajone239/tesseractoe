@@ -13,7 +13,7 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use axum_backend::game::GameState;
+use axum_backend::game::{Game, GameState};
 
 #[tokio::main]
 async fn main() {
@@ -42,7 +42,7 @@ async fn handler() -> Html<&'static str> {
 }
 
 #[derive(Default, Serialize, Clone)]
-struct Game {
+struct GameEntity {
     id: Uuid,
     player1_id: Uuid,
     player2_id: Option<Uuid>,
@@ -56,7 +56,7 @@ async fn get_games(State(db): State<Db>) -> impl IntoResponse {
     Json(games)
 }
 
-type Db = Arc<Mutex<HashMap<Uuid, Game>>>;
+type Db = Arc<Mutex<HashMap<Uuid, GameEntity>>>;
 
 #[derive(Default, Deserialize, Serialize, Clone, Copy)]
 struct CreateGame {
@@ -73,7 +73,7 @@ async fn add_game(State(db): State<Db>, Json(input): Json<CreateGame>) -> impl I
         return (StatusCode::CREATED, Json(game.clone()));
     }
 
-    let game = Game {
+    let game = GameEntity {
         id: Uuid::new_v4(),
         player1_id: input.player1_id,
         player2_id: None,
@@ -136,39 +136,59 @@ async fn play_game(
 ) -> impl IntoResponse {
     let mut db = db.lock().unwrap();
 
-    let Some(game) = db.get_mut(&game_id) else {
-        return StatusCode::NOT_FOUND;
+    let Some(game_entity) = db.get_mut(&game_id) else {
+        return (StatusCode::NOT_FOUND, format!("No game for id {}", game_id));
     };
 
-    if game.player2_id.is_none() {
-        return StatusCode::FORBIDDEN;
+    if game_entity.player2_id.is_none() {
+        return (StatusCode::FORBIDDEN, "Game isn't accepted".to_owned());
     }
 
-    let Some(next_move_index) = game.player_moves.iter().position(|m| m.is_none()) else {
-        return StatusCode::FORBIDDEN;
+    if game_entity.game_state.is_terminal() {
+        return (
+            StatusCode::LOCKED,
+            format!("Game ended with state {:?}", game_entity.game_state),
+        );
+    }
+
+    let mut game = Game::new(&mut game_entity.player_moves);
+
+    let Some(next_move_index) = game.get_next_index() else {
+        return (StatusCode::FORBIDDEN, "No moves to be made!".to_owned());
     };
 
     // even indexes go with player one
     let one_or_two = next_move_index & 1 == 0;
 
     // Check for the right player
-    if (one_or_two && input.player_id != game.player1_id)
-        || (!one_or_two && input.player_id != game.player2_id.unwrap())
+    if (one_or_two && input.player_id != game_entity.player1_id)
+        || (!one_or_two && input.player_id != game_entity.player2_id.unwrap())
     {
-        return StatusCode::FORBIDDEN;
+        let player = if one_or_two {
+            game_entity.player1_id
+        } else {
+            game_entity.player2_id.unwrap()
+        };
+        return (
+            StatusCode::FORBIDDEN,
+            format!("It is the turn of player {:?}", player),
+        );
     }
 
-    if game
-        .player_moves
-        .iter()
-        .filter(|m| m.is_some())
-        .map(|o| o.unwrap())
-        .any(|m| m == input.player_move)
-    {
-        return StatusCode::FORBIDDEN;
+    // Check if this move has been made
+    if game.has_move_been_played(input.player_move) {
+        return (
+            StatusCode::FORBIDDEN,
+            format!("Move {} has already been played", input.player_move),
+        );
     }
 
-    game.player_moves[next_move_index] = Some(input.player_move);
+    let play_result = game.play(input.player_move);
 
-    StatusCode::ACCEPTED
+    game_entity.game_state = game.calc_win();
+
+    match play_result {
+        Ok(_) => (StatusCode::ACCEPTED, "Success".to_owned()),
+        Err(err) => (StatusCode::BAD_REQUEST, format!("Fail with error: {err:?}")),
+    }
 }
