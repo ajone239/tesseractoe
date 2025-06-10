@@ -1,13 +1,10 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
+	import { goto } from '$app/navigation';
 
 	const data = $props();
 
-	console.log(data);
-
-	let { game_id } = data;
-
-	console.log(game_id);
+	let { game_id } = data.data;
 
 	let player_id;
 	let interval;
@@ -19,10 +16,14 @@
 			return;
 		}
 
-		const url = `http://localhost:3000/games/${game_id}/accept`;
+		const url = `http://localhost:3000/games/${game_id}/status`;
 
 		const res = await fetch(url);
 		game = await res.json();
+
+		if (game.game_state == 'Playing') {
+			goto('/play/' + game.id);
+		}
 	};
 
 	onMount(() => {
@@ -38,7 +39,7 @@
 <h2>Waiting for game {game_id}...</h2>
 
 {#if game}
-	<p>Game has status {game.game_staus}</p>
+	<p>Game has status {game.game_state}</p>
 {:else}
 	<p>Couldn't find game :(</p>
 {/if}

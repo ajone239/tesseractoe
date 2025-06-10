@@ -1,5 +1,3 @@
-export const csr = true;
-
 export function load({ params }) {
     console.log('load params:', params);
     return {
