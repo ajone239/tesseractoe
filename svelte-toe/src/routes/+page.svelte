@@ -29,6 +29,7 @@
 			body: JSON.stringify(request)
 		});
 
+		console.log("Austin");
 		console.log(res);
 
 		const game = await res.json();
@@ -75,9 +76,10 @@
 
 				if (res.status == 404) {
 					alert('Accept failed: bad id');
+                    return;
 				}
 
-				// TODO(austin.jones) navigate to the game page
+                goto('/play/' + game.id);
 			}}>Accept</button
 		>
 	</div>

@@ -17,6 +17,8 @@
 	});
 </script>
 
+<h1><a href="/"><u>Tesseractoe</u></a></h1>
+
 <h3 class="playerid">You are {playerId}</h3>
 
 {@render children()}
@@ -29,6 +31,14 @@
 		margin: 0;
 		padding: 1rem;
 	}
+
+	:global(h1) {
+		font-size: 1.5rem;
+		margin-top: 2rem;
+		padding-bottom: 0.5rem;
+		color: #ffffff;
+	}
+
 	:global(h2) {
 		font-size: 1.5rem;
 		margin-top: 2rem;

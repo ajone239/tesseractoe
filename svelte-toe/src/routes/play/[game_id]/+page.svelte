@@ -22,7 +22,6 @@
     /*
      * TODO(austin.jones):
      *
-     * - make request on button press
      * - disable ui if not your turn
      * - signify turn in ui
      */
@@ -50,6 +49,34 @@
     onDestroy(() => {
         clearInterval(interval);
     });
+
+    const make_onclick = (id) => {
+        return async () => {
+
+            const request = {
+                player_id: player_id,
+                player_move: id
+            };
+
+            const url = `http://localhost:3000/games/${game_id}/play`;
+
+            const res = await fetch(url, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(request)
+            });
+
+            if (res.status != 202) {
+                const err_text = await res.text()
+                alert(err_text)
+            }
+
+            status_game()
+        };
+    };
+
 </script>
 
 <h2>Playing: {game_id}</h2>
@@ -63,7 +90,11 @@
         {#each counts as row (row)}
             <div class="game-row">
                 {#each counts as col (col)}
-                    <Cell id={row * size + col} {over} game_state={player_moves} />
+                    <Cell
+                         id={row * size + col}
+                         game_state={player_moves}
+                         onclick={ make_onclick(row * size + col)}
+                     />
                 {/each}
             </div>
         {/each}
