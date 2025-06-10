@@ -24,3 +24,21 @@ The expected frontends are:
 - A scrappy python script for testing.
 
 **Note**: Naming creds to [@karnwine729](https://github.com/karnwine729).
+
+# How'd it go?
+
+## Axum
+
+Rust is a delight.
+
+## Svelte
+
+I really enjoy the style and reactivity of the language.
+It feels very natural to make a page.
+File based routing is very nice.
+App flow is nice.
+
+The data passing from the rage `+page.js` to the `+page.svelte` was difficult.
+I also felt the whole time that I was using it half wrong.
+I had a feeling that it would have been way easier to use full stack svelte then to try to use it to hit a backend.
+This could be noob problems though.
