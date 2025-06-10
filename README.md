@@ -21,5 +21,6 @@ The expected frontends are:
 - [React](https://react.dev)
 - [Blazor](https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor)
 - [Angular](https://angular.dev)
+- A scrappy python script for testing.
 
 **Note**: Naming creds to [@karnwine729](https://github.com/karnwine729).
