@@ -6,11 +6,12 @@ use std::{
 use axum::{
     Json, Router,
     extract::{Path, State},
-    http::StatusCode,
+    http::{Method, StatusCode},
     response::{Html, IntoResponse},
     routing::{get, patch, post},
 };
 use serde::{Deserialize, Serialize};
+use tower_http::cors::{Any, CorsLayer};
 use uuid::Uuid;
 
 use axum_backend::game::{Game, GameState};
@@ -19,6 +20,11 @@ use axum_backend::game::{Game, GameState};
 async fn main() {
     let db = Db::default();
 
+    let cors = CorsLayer::new()
+        .allow_methods([Method::GET, Method::POST, Method::PATCH])
+        .allow_headers([axum::http::header::CONTENT_TYPE])
+        .allow_origin(Any);
+
     // build our application with a route
     let app = Router::new()
         .route("/", get(handler))
@@ -26,6 +32,7 @@ async fn main() {
         .route("/games/{id}/accept", post(accept_game))
         .route("/games/{id}/status", get(status_game))
         .route("/games/{id}/play", patch(play_game))
+        .layer(cors)
         .with_state(db);
 
     // run it
@@ -101,6 +108,10 @@ async fn accept_game(
     let Some(game) = db.get_mut(&game_id) else {
         return StatusCode::NOT_FOUND;
     };
+
+    if game.player1_id == input.player2_id {
+        return StatusCode::FORBIDDEN;
+    }
 
     game.game_state = GameState::Playing;
     game.player2_id = Some(input.player2_id);
