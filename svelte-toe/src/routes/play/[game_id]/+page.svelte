@@ -19,6 +19,14 @@
         }
     });
 
+    /*
+     * TODO(austin.jones):
+     *
+     * - make request on button press
+     * - disable ui if not your turn
+     * - signify turn in ui
+     */
+
     const size = 4;
     const counts = [...Array(size).keys()];
     const over = false;
@@ -32,14 +40,6 @@
 
         const res = await fetch(url);
         game = await res.json();
-
-        if (
-            game.game_state == 'Draw' ||
-            game.game_state == 'NaughtWin' ||
-            game.game_state == 'CrossWin'
-        ) {
-            goto('/');
-        }
     };
 
     onMount(() => {
@@ -80,12 +80,6 @@
         width: 8em;
         border-radius: 0.5em;
         margin: 0 0 1em 0;
-    }
-    .control-row {
-        display: flex;
-        flex-direction: row;
-        justify-content: center; /* center vertically */
-        gap: 6em;
     }
     .game-row {
         display: flex;
