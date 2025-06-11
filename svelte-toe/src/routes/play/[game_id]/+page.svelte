@@ -1,16 +1,17 @@
-<script>
+<script lang="ts">
     import { onMount, onDestroy } from 'svelte';
-    import { goto } from '$app/navigation';
     import Cell from '../Cell.svelte';
+    import type { Game } from '$lib/game.ts';
 
     const data = $props();
 
     let { game_id } = data.data;
 
-    let player_id;
-    let interval;
+    let player_id: string | null;
+    let interval: NodeJS.Timeout;
 
-    let game = $state(undefined);
+    let game: Game | null = $state(null);
+
     let player_moves = $derived.by(() => {
         if (game) {
             return game.player_moves;
@@ -28,7 +29,6 @@
 
     const size = 4;
     const counts = [...Array(size).keys()];
-    const over = false;
 
     const status_game = async () => {
         if (game_id == undefined) {
@@ -50,9 +50,8 @@
         clearInterval(interval);
     });
 
-    const make_onclick = (id) => {
+    const make_onclick = (id: number) => {
         return async () => {
-
             const request = {
                 player_id: player_id,
                 player_move: id
@@ -69,14 +68,13 @@
             });
 
             if (res.status != 202) {
-                const err_text = await res.text()
-                alert(err_text)
+                const err_text = await res.text();
+                alert(err_text);
             }
 
-            status_game()
+            status_game();
         };
     };
-
 </script>
 
 <h2>Playing: {game_id}</h2>
@@ -86,15 +84,15 @@
 
     <div class="opponent name"></div>
 
-    <div class="game board">
+    <div class="game-board">
         {#each counts as row (row)}
             <div class="game-row">
                 {#each counts as col (col)}
                     <Cell
-                         id={row * size + col}
-                         game_state={player_moves}
-                         onclick={ make_onclick(row * size + col)}
-                     />
+                        id={row * size + col}
+                        game_state={player_moves}
+                        onclick={make_onclick(row * size + col)}
+                    />
                 {/each}
             </div>
         {/each}
@@ -106,12 +104,6 @@
 {/if}
 
 <style>
-    button {
-        height: 2em;
-        width: 8em;
-        border-radius: 0.5em;
-        margin: 0 0 1em 0;
-    }
     .game-row {
         display: flex;
         flex-direction: row;

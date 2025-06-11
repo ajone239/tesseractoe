@@ -1,15 +1,16 @@
-<script>
+<script lang="ts">
     import { onMount, onDestroy } from 'svelte';
     import { goto } from '$app/navigation';
+    import type { Game } from '$lib/game';
 
     const data = $props();
 
     let { game_id } = data.data;
 
-    let player_id;
-    let interval;
+    let player_id: string | null;
+    let interval: NodeJS.Timeout;
 
-    let game = $state(undefined);
+    let game: Game | null = $state(null);
 
     const status_game = async () => {
         if (game_id == undefined) {
@@ -20,6 +21,10 @@
 
         const res = await fetch(url);
         game = await res.json();
+
+        if (game == null) {
+            return;
+        }
 
         if (game.game_state == 'Playing') {
             goto('/play/' + game.id);
