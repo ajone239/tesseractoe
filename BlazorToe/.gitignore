@@ -13,6 +13,7 @@ _site/
 *.userosscache
 *.sln.docstates
 .vscode/
+.idea/
 !.vscode/extensions.json
 !.vscode/settings.json
 *.userprefs
