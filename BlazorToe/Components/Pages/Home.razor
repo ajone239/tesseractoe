@@ -5,11 +5,11 @@
 @using System.Timers
 @using BlazorToe.Models
 
-@implements IDisposable
-
 <PageTitle>Home</PageTitle>
 
 <h1>Tesserac-Toe</h1>
+
+<button onclick="@GetGames">Refresh Games</button>
 
 <h3>Waiting Games</h3>
 
@@ -45,7 +45,6 @@ else
 @code
 {
     private List<Game>? _games;
-    private Timer? _timer;
 
     private IList<Game> WaitingGames => _games?.Where(g => g.Player2Id is null).ToList() ?? [];
     private IList<Game> ActiveGames => _games?.Where(g => g.Player2Id is not null).ToList() ?? [];
@@ -54,13 +53,7 @@ else
     {
         try
         {
-            Console.WriteLine("Here");
             _games = await Http.GetFromJsonAsync<List<Game>>("http://localhost:3000/games");
-            Console.WriteLine(_games?.Select(g => g.Id).ToString());
-            if (_games is not null)
-            {
-                ShouldRender();
-            }
         }
         catch (Exception ex)
         {
@@ -72,18 +65,5 @@ else
     {
         // Init load
         await GetGames();
-        
-        _timer = new(500); 
-        _timer.Elapsed += async (_, _) => await GetGames();
-        _timer.AutoReset = true;
-        _timer.Start();
-    }
-
-    public void Dispose()
-    {
-        Console.WriteLine("<Disposed> :)");
-        _timer?.Stop();
-        _timer?.Dispose();
-        Console.WriteLine("</Disposed> :)");
     }
 }
