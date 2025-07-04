@@ -1,0 +1,21 @@
+@page "/waiting"
+@using BlazorToe.Utils
+@rendermode InteractiveServer
+
+@inject HttpClient Http
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+
+<h3>Waiting as @_privateId</h3>
+
+@code {
+    private Guid _privateId;
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _privateId = await LocalStorage.GetPlayerId();
+            StateHasChanged();
+        }
+    }
+}

@@ -1,11 +1,12 @@
+using Blazored.LocalStorage;
 using BlazorToe.Components;
-using BlazorToe.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpClient();
 builder.Services.AddScoped(sp => new HttpClient());
-builder.Services.AddScoped<PlayerState>();
+builder.Services.AddBlazoredLocalStorage();
+
 
 // Add services to the container.
 builder.Services.AddRazorComponents()

@@ -3,18 +3,19 @@
 
 @using BlazorToe.Models
 @using BlazorToe.Components.Components
-@using BlazorToe.Services
+@using BlazorToe.Utils
 
 @implements IDisposable
 
 @inject HttpClient Http
-@inject PlayerState PlayerState
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject NavigationManager Navigation
 
 <PageTitle>Home</PageTitle>
 
 <div class="mb-4">
     <p class="border-bottom-2 border-dark text-dark">
-        You are: @(PrivateId.ToString())
+        You are: @(_privateId.ToString())
     </p>
     <button class="btn btn-primary" @onclick="CreateNewGame">Create New Game</button>
 </div>
@@ -50,38 +51,32 @@ else
 
 @code
 {
+    private Guid _privateId;
     private List<Game>? _games;
     private CancellationTokenSource? _cts;
 
     private IList<Game> WaitingGames => _games?.Where(g => g.Player2Id is null).ToList() ?? [];
     private IList<Game> ActiveGames => _games?.Where(g => g.Player2Id is not null).ToList() ?? [];
-    private Guid PrivateId => PlayerState.PlayerId;
 
-    async Task<bool> GetGames()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var countBefore = _games?.Count ?? 0;
-        var countAfter = countBefore;
-        try
+        if (firstRender)
         {
-            _games = await Http.GetFromJsonAsync<List<Game>>("http://localhost:3000/games");
-
-            if (_games is null)
-            {
-                Console.WriteLine($"Games from endpoint were null{PrivateId}!");
-                return true;
-            }
-            
-            countAfter = _games.Count;
-            Console.WriteLine($"The request has run {PrivateId}!");
+            _privateId = await LocalStorage.GetPlayerId();
+            StateHasChanged();
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"{PrivateId} : {ex}");
-        }
-
-        return countAfter != countBefore;
     }
 
+    protected override void OnInitialized()
+    {
+        _cts = new();
+
+        _ = Task.Run(async () =>
+        {
+            await PollGames(_cts.Token);
+        });
+    }
+    
     async Task PollGames(CancellationToken token)
     {
         while (!token.IsCancellationRequested)
@@ -97,24 +92,40 @@ else
         }
     }
 
-    protected override void OnInitialized()
+    async Task<bool> GetGames()
     {
-        _cts = new();
-
-        Task.Run(async () =>
+        var countBefore = _games?.Count ?? 0;
+        var countAfter = countBefore;
+        try
         {
-            await PollGames(_cts.Token);
-        });
+            _games = await Http.GetFromJsonAsync<List<Game>>("http://localhost:3000/games");
+
+            if (_games is null)
+            {
+                Console.WriteLine($"Games from endpoint were null{_privateId}!");
+                return true;
+            }
+            
+            countAfter = _games.Count;
+            Console.WriteLine($"The request has run {_privateId}!");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"{_privateId} : {ex}");
+        }
+
+        return countAfter != countBefore;
     }
 
     void JoinGame(Guid gameId)
     {
-        Console.WriteLine($"trying to join game {gameId} as {PrivateId}");
+        Console.WriteLine($"trying to join game {gameId} as {_privateId}");
     }
 
     void CreateNewGame()
     {
-        Console.WriteLine($"trying to create a new game as {PrivateId}");
+        Console.WriteLine($"trying to create a new game as {_privateId}");
+        Navigation.NavigateTo("/waiting");
     }
 
     public void Dispose()
@@ -122,6 +133,6 @@ else
         _cts?.Cancel();
         _cts?.Dispose();
         
-        Console.WriteLine($"Disposed {PrivateId}");
+        Console.WriteLine($"Disposed {_privateId}");
     }
 }
