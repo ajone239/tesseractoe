@@ -1,14 +1,24 @@
 ﻿@page "/"
 @rendermode InteractiveServer
 
-@inject HttpClient Http
 @using BlazorToe.Models
+@using BlazorToe.Components.Components
+@using BlazorToe.Services
+
+@implements IDisposable
+
+@inject HttpClient Http
+@inject PlayerState PlayerState
 
 <PageTitle>Home</PageTitle>
 
-<h1>Tesserac-Toe</h1>
+<div class="mb-4">
+    <p class="border-bottom-2 border-dark text-dark">
+        You are: @(PrivateId.ToString())
+    </p>
+    <button class="btn btn-primary" @onclick="CreateNewGame">Create New Game</button>
+</div>
 
-<button class="btn btn-primary" @onclick="@(() => GetGames())">Refresh Games</button>
 
 <h3>Waiting Games (@WaitingGames.Count)</h3>
 
@@ -16,8 +26,7 @@
 {
     @foreach (var game in WaitingGames)
     {
-        <p>Game ID: @game.Id</p>
-        <p>Player 1: @game.Player1Id</p>
+        <WaitingGame Game="game" OnJoinGame="JoinGame"/>
     }
 }
 else
@@ -31,11 +40,7 @@ else
 {
     @foreach (var game in ActiveGames)
     {
-        <div style="background: lightblue; border-radius: 2ex; padding: 2ex;margin: 2ex">
-            <p>Game ID: @game.Id</p>
-            <p>Player 1: @game.Player1Id</p>
-            <p>Player 2: @game.Player2Id</p>
-        </div>
+        <ActiveGame Game="game"/>
     }
 }
 else
@@ -46,37 +51,77 @@ else
 @code
 {
     private List<Game>? _games;
+    private CancellationTokenSource? _cts;
 
     private IList<Game> WaitingGames => _games?.Where(g => g.Player2Id is null).ToList() ?? [];
     private IList<Game> ActiveGames => _games?.Where(g => g.Player2Id is not null).ToList() ?? [];
+    private Guid PrivateId => PlayerState.PlayerId;
 
-    void Test(string message = "Sync Test")
+    async Task<bool> GetGames()
     {
-        Console.WriteLine(message);
-    }
-
-    async Task TestAsync(string message = "Async Test")
-    {
-        await Task.Delay(1);
-        Console.WriteLine(message);
-    }
-
-    private async Task GetGames()
-    {
+        var countBefore = _games?.Count ?? 0;
+        var countAfter = countBefore;
         try
         {
             _games = await Http.GetFromJsonAsync<List<Game>>("http://localhost:3000/games");
-            Console.WriteLine("The request has run!");
+
+            if (_games is null)
+            {
+                Console.WriteLine($"Games from endpoint were null{PrivateId}!");
+                return true;
+            }
+            
+            countAfter = _games.Count;
+            Console.WriteLine($"The request has run {PrivateId}!");
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
+            Console.WriteLine($"{PrivateId} : {ex}");
+        }
+
+        return countAfter != countBefore;
+    }
+
+    async Task PollGames(CancellationToken token)
+    {
+        while (!token.IsCancellationRequested)
+        {
+            var shouldUpdate = await GetGames();
+
+            if (shouldUpdate)
+            {
+                await InvokeAsync(StateHasChanged);
+            }
+            
+            await Task.Delay(1000, token);
         }
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        // Init load
-        await GetGames();
+        _cts = new();
+
+        Task.Run(async () =>
+        {
+            await PollGames(_cts.Token);
+        });
+    }
+
+    void JoinGame(Guid gameId)
+    {
+        Console.WriteLine($"trying to join game {gameId} as {PrivateId}");
+    }
+
+    void CreateNewGame()
+    {
+        Console.WriteLine($"trying to create a new game as {PrivateId}");
+    }
+
+    public void Dispose()
+    {
+        _cts?.Cancel();
+        _cts?.Dispose();
+        
+        Console.WriteLine($"Disposed {PrivateId}");
     }
 }
