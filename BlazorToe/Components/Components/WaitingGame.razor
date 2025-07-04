@@ -1,0 +1,23 @@
+@using BlazorToe.Models
+
+<div class="card bg-light border-2 p-2 m-2">
+    <h4>Game ID: @Game.Id</h4>
+    <p>Player 1: @Game.Player1Id</p>
+    <div class="flex-end">
+        <button class="btn btn-primary"
+                @onclick="CallJoinGame">Accept</button>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public required Game Game { get; set; }
+    
+    [Parameter]
+    public EventCallback<Guid> OnJoinGame { get; set; }
+
+    void CallJoinGame()
+    {
+        OnJoinGame.InvokeAsync(Game.Id);
+    }
+}
