@@ -6,6 +6,11 @@ a, .btn-link {
     color: #006bb7;
 }
 
+h2, h3 {
+    border-bottom: lightgray solid 2px;
+    margin-bottom: 10px;
+}
+
 .btn-primary {
     color: #fff;
     background-color: #1b6ec2;
