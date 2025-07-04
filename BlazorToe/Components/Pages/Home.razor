@@ -10,6 +10,8 @@
 @inject HttpClient Http
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject NavigationManager Navigation
+@inject IJSRuntime Js
+
 
 <PageTitle>Home</PageTitle>
 
@@ -122,10 +124,36 @@ else
         Console.WriteLine($"trying to join game {gameId} as {_privateId}");
     }
 
-    void CreateNewGame()
+    async Task CreateNewGame()
     {
         Console.WriteLine($"trying to create a new game as {_privateId}");
-        Navigation.NavigateTo("/waiting");
+
+        var request = new CreateGame
+        {
+            Player1Id = _privateId,
+        };
+        
+        // TODO(austin.jones): grab the id 
+        var result = await Http.PostAsJsonAsync(
+            "http://localhost:3000/games",
+            request
+        );
+
+        if (!result.IsSuccessStatusCode)
+        {
+            await Js.InvokeVoidAsync("showAlert", "Could not make game!");
+            return;
+        }
+
+        var game = await result.Content.ReadFromJsonAsync<Game>();
+
+        if (game is null)
+        {
+            await Js.InvokeVoidAsync("showAlert", "Could not make game!");
+            return;
+        }
+
+        Navigation.NavigateTo($"/waiting/{game.Id}");
     }
 
     public void Dispose()

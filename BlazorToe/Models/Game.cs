@@ -30,4 +30,7 @@ public class Game
 
     [JsonPropertyName("player_moves")]
     public uint?[] PlayerMoves { get; set; } = [];
+    
+    public string PlayerMovesString =>  string.Join(",", PlayerMoves.Where(m => m is not null));
+        
 }

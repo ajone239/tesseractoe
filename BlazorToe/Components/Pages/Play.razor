@@ -1,4 +1,4 @@
-@page "/waiting/{WaitingGameId}"
+@page "/play/{GameId}"
 @using BlazorToe.Models
 @using BlazorToe.Utils
 @using BlazorToe.Components.Components
@@ -8,12 +8,10 @@
 
 @inject HttpClient Http
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
-@inject NavigationManager Navigation
 
-<h3>Waiting as @_privateId</h3>
+<h3>Playing game @GameId</h3>
+<h4>Playing as @_privateId</h4>
 
-<p>Seconds waited: @SecondsWaited</p>
-    
 @if (_game is not null)
 {
     <ActiveGame Game="_game"/>
@@ -27,15 +25,13 @@ else
     private Guid _privateId;
     private Game? _game;
     private CancellationTokenSource? _cts;
-
-    private uint SecondsWaited = 0;
     
     [Parameter]
-    public string WaitingGameId { get; set; }
+    public string GameId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        await GetGame();
+        await StatusGame();
         
         _cts = new();
 
@@ -58,23 +54,17 @@ else
     {
         while (!token.IsCancellationRequested)
         {
-            await GetGame();
-            SecondsWaited++;
+            await StatusGame();
             await InvokeAsync(StateHasChanged);
-
-            if (_game?.GameState == "Playing") {
-                Navigation.NavigateTo($"/play/{WaitingGameId}");
-            }
-            
-            await Task.Delay(1000, token);
+            await Task.Delay(500, token);
         }
     }
 
-    async Task GetGame()
+    async Task StatusGame()
     {
         try
         {
-            var requestUri = $"http://localhost:3000/games/{WaitingGameId}/status";
+            var requestUri = $"http://localhost:3000/games/{GameId}/status";
             _game = await Http.GetFromJsonAsync<Game>(requestUri);
         }
         catch (Exception ex)
