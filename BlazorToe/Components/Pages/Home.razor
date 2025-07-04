@@ -1,17 +1,16 @@
 ﻿@page "/"
+@rendermode InteractiveServer
 
 @inject HttpClient Http
-@using System.Text.Json.Serialization
-@using System.Timers
 @using BlazorToe.Models
 
 <PageTitle>Home</PageTitle>
 
 <h1>Tesserac-Toe</h1>
 
-<button onclick="@GetGames">Refresh Games</button>
+<button class="btn btn-primary" @onclick="@(() => GetGames())">Refresh Games</button>
 
-<h3>Waiting Games</h3>
+<h3>Waiting Games (@WaitingGames.Count)</h3>
 
 @if (WaitingGames.Any())
 {
@@ -26,15 +25,17 @@ else
     <p>There are no games :/</p>
 }
 
-<h3>Games in progress</h3>
+<h3>Games in progress (@(ActiveGames.Count))</h3>
 
-@if (WaitingGames.Any())
+@if (ActiveGames.Any())
 {
     @foreach (var game in ActiveGames)
     {
-        <p>Game ID: @game.Id</p>
-        <p>Player 1: @game.Player1Id</p>
-        <p>Player 2: @game.Player2Id</p>
+        <div style="background: lightblue; border-radius: 2ex; padding: 2ex;margin: 2ex">
+            <p>Game ID: @game.Id</p>
+            <p>Player 1: @game.Player1Id</p>
+            <p>Player 2: @game.Player2Id</p>
+        </div>
     }
 }
 else
@@ -49,11 +50,23 @@ else
     private IList<Game> WaitingGames => _games?.Where(g => g.Player2Id is null).ToList() ?? [];
     private IList<Game> ActiveGames => _games?.Where(g => g.Player2Id is not null).ToList() ?? [];
 
+    void Test(string message = "Sync Test")
+    {
+        Console.WriteLine(message);
+    }
+
+    async Task TestAsync(string message = "Async Test")
+    {
+        await Task.Delay(1);
+        Console.WriteLine(message);
+    }
+
     private async Task GetGames()
     {
         try
         {
             _games = await Http.GetFromJsonAsync<List<Game>>("http://localhost:3000/games");
+            Console.WriteLine("The request has run!");
         }
         catch (Exception ex)
         {

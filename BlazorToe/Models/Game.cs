@@ -18,15 +18,15 @@ public class Game
 {
     [JsonPropertyName("id")]
     public Guid Id { get; set; }
-    
+
     [JsonPropertyName("player1_id")]
     public Guid Player1Id { get; set; }
-    
+
     [JsonPropertyName("player2_id")]
     public Guid? Player2Id { get; set; }
-    
+
     [JsonPropertyName("game_state")]
-    public string GameState { get; set; }
+    public required string GameState { get; set; }
 
     [JsonPropertyName("player_moves")]
     public uint?[] PlayerMoves { get; set; } = [];
