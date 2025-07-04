@@ -14,7 +14,23 @@
 
 @if (_game is not null)
 {
-    <ActiveGame Game="_game"/>
+    <div class="game-board">
+        
+    @for (int i = 0; i < 4; i++)
+    {
+        <div class="game-row">
+        @for (int j = 0; j < 4; j++)
+        {
+            var id = j + (i * 4);
+            <Cell 
+                Id="@id"
+                GameState="_game.PlayerMoves"
+                OnClick="@(() => Console.WriteLine(id))"
+                />
+        }
+        </div>
+    }
+    </div>
 }
 else
 {

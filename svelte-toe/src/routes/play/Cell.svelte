@@ -1,5 +1,6 @@
 <script lang="ts">
-    const { id, onclick, game_state }: { id: number; onclick: () => void; game_state: number[] } = $props();
+    const { id, onclick, game_state }: { id: number; onclick: () => void; game_state: number[] } =
+        $props();
 
     let cell_text = $derived.by(() => {
         let idx = game_state.indexOf(id);

@@ -1,0 +1,15 @@
+<button @onclick="OnClick">
+    <span class="main-text">X</span>
+    <span class="corner-text">@Id</span>
+</button>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    
+    [Parameter]
+    public required uint?[] GameState { get; set; }
+    
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+}
