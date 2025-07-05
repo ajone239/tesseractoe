@@ -29,7 +29,7 @@
 {
     @foreach (var game in WaitingGames)
     {
-        <WaitingGame Game="game" OnJoinGame="JoinGame"/>
+        <WaitingGame Game="game" OnJoinGame="() => JoinGame(game.Id)"/>
     }
 }
 else
@@ -119,9 +119,32 @@ else
         return countAfter != countBefore;
     }
 
-    void JoinGame(Guid gameId)
+    async Task JoinGame(Guid gameId)
     {
-        Console.WriteLine($"trying to join game {gameId} as {_privateId}");
+        try
+        {
+            var request = new AcceptGame()
+            {
+                Player2Id = _privateId,
+            };
+            
+            var requestUri = $"http://localhost:3000/games/{gameId}/accept";
+            
+            var result = await Http.PostAsJsonAsync(requestUri,request);
+            
+            
+            if (!result.IsSuccessStatusCode)
+            {
+                await Js.InvokeVoidAsync("alert", "Could not accept!");
+                return;
+            }
+            
+            Navigation.NavigateTo($"/play/{gameId}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"{_privateId} : {ex}");
+        }
     }
 
     async Task CreateNewGame()
