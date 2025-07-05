@@ -1,4 +1,5 @@
 @page "/play/{GameId}"
+@using System.Net
 @using BlazorToe.Models
 @using BlazorToe.Utils
 @using BlazorToe.Components.Components
@@ -7,30 +8,32 @@
 @implements IDisposable
 
 @inject HttpClient Http
+@inject IJSRuntime Js
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 
 <h3>Playing game @GameId</h3>
 <h4>Playing as @_privateId</h4>
 
+
 @if (_game is not null)
 {
     <div class="game-board">
-        
-    @for (int i = 0; i < 4; i++)
+    @for (var i = 0; i < 4; i++)
     {
         <div class="game-row">
-        @for (int j = 0; j < 4; j++)
+        @for (var j = 0; j < 4; j++)
         {
             var id = j + (i * 4);
             <Cell 
                 Id="@id"
-                GameState="_game.PlayerMoves"
-                OnClick="@(() => Console.WriteLine(id))"
+                PlayerMoves="_game.PlayerMoves"
+                OnClick="@(MakeOnClick(id))"
                 />
         }
         </div>
     }
     </div>
+    <ActiveGame Game="_game" />
 }
 else
 {
@@ -41,9 +44,9 @@ else
     private Guid _privateId;
     private Game? _game;
     private CancellationTokenSource? _cts;
-    
+
     [Parameter]
-    public string GameId { get; set; }
+    public string GameId { get; set; } = Guid.Empty.ToString();
 
     protected override async Task OnInitializedAsync()
     {
@@ -82,11 +85,38 @@ else
         {
             var requestUri = $"http://localhost:3000/games/{GameId}/status";
             _game = await Http.GetFromJsonAsync<Game>(requestUri);
+            await InvokeAsync(StateHasChanged);
         }
         catch (Exception ex)
         {
             Console.WriteLine($"{_privateId} : {ex}");
         }
+    }
+
+    EventCallback MakeOnClick(int id)
+    {
+        return EventCallback.Factory.Create(this, async () =>
+            {
+                var request = new PlayGame()
+                {
+                    PlayerId = _privateId,
+                    PlayerMove = (uint)id
+                };
+
+                var url = $"http://localhost:3000/games/{GameId}/play";
+
+                var result = await Http.PatchAsJsonAsync(url, request);
+
+                if (result.StatusCode != HttpStatusCode.Accepted)
+                {
+                    var errorText = await result.Content.ReadAsStringAsync();
+                    await Js.InvokeVoidAsync("alert", errorText);
+                    return;
+                }
+
+                await StatusGame();
+            }
+        );
     }
     
     public void Dispose()

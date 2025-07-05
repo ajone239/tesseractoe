@@ -29,9 +29,9 @@ else
     private CancellationTokenSource? _cts;
 
     private uint SecondsWaited = 0;
-    
+
     [Parameter]
-    public string WaitingGameId { get; set; }
+    public string WaitingGameId { get; set; } = Guid.Empty.ToString();
 
     protected override async Task OnInitializedAsync()
     {

@@ -1,15 +1,48 @@
+@using System.Diagnostics.CodeAnalysis
 <button @onclick="OnClick">
-    <span class="main-text">X</span>
+    <span class="main-text">@CellText</span>
     <span class="corner-text">@Id</span>
 </button>
 
 @code {
+    private uint?[] _playerMoves;
+
     [Parameter]
     public int Id { get; set; }
-    
+
     [Parameter]
-    public required uint?[] GameState { get; set; }
-    
+    public required uint?[] PlayerMoves
+    {
+        get => _playerMoves;
+        [MemberNotNull(nameof(_playerMoves))]
+        set
+        {
+            if (_playerMoves == value)
+            {
+                return;
+            }
+            _playerMoves = value;
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
     [Parameter]
     public EventCallback OnClick { get; set; }
+
+    private char CellText => GetPlayerSymbol();
+
+    char GetPlayerSymbol()
+    {
+        var idx = Array.IndexOf(PlayerMoves, (uint)Id);
+        
+        Console.WriteLine($"{idx}:{Id}");
+
+        if (idx == -1)
+        {
+            return ' ';
+        }
+
+        return (idx & 1) == 1 ? 'X' : 'O';
+    }
+
 }

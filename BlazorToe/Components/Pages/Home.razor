@@ -133,7 +133,6 @@ else
             Player1Id = _privateId,
         };
         
-        // TODO(austin.jones): grab the id 
         var result = await Http.PostAsJsonAsync(
             "http://localhost:3000/games",
             request
@@ -141,7 +140,7 @@ else
 
         if (!result.IsSuccessStatusCode)
         {
-            await Js.InvokeVoidAsync("showAlert", "Could not make game!");
+            await Js.InvokeVoidAsync("alert", "Could not make game!");
             return;
         }
 
@@ -149,7 +148,7 @@ else
 
         if (game is null)
         {
-            await Js.InvokeVoidAsync("showAlert", "Could not make game!");
+            await Js.InvokeVoidAsync("alert", "Could not make game!");
             return;
         }
 
