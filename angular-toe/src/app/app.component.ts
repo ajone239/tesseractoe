@@ -1,10 +1,23 @@
 import { Component } from '@angular/core';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [],
+  imports: [RouterModule],
   template: `
-  <p> LFG! </p>
+  <main>
+    <a [routerLink]="['/']">
+      <header class="brand-name">
+        <h1>
+          Tesseractoe
+        </h1>
+      </header>
+    </a>
+
+    <section>
+      <router-outlet></router-outlet>
+    </section>
+  </main>
   `,
   styleUrl: './app.component.scss'
 })
