@@ -1,8 +1,16 @@
 <h1> Home </h1>
 
-<p>home-page works!</p>
-
-<p>{{ test_data }}</p>
+<section class="games">
+  <ul>
+    @for (game of games; track $index) {
+    <li>
+      <p>
+        Game {{ game.id }}
+      </p>
+    </li>
+    }
+  </ul>
+</section>
 
 <p>
   <a [routerLink]="['/waiting/123']"> Waiting Test</a>
