@@ -1,21 +1,27 @@
 <h1> Home </h1>
 
-<section class="games">
+<section class="waiting-games">
+<h2> Waiting Games </h2>
   <ul>
-    @for (game of games; track $index) {
+    @for (game of waiting_games; track $index) {
     <li>
       <p>
-        Game {{ game.id }}
+        <app-waiting-game-card [game]="game" [acceptGame]="makeAcceptGame(game)"></app-waiting-game-card>
       </p>
     </li>
     }
   </ul>
 </section>
 
-<p>
-  <a [routerLink]="['/waiting/123']"> Waiting Test</a>
-</p>
-
-<p>
-  <a [routerLink]="['/play/123']"> Play Test</a>
-</p>
+<section class="active-games">
+<h2> Active Games </h2>
+  <ul>
+    @for (game of active_games; track $index) {
+    <li>
+      <p>
+        {{game.id}}
+      </p>
+    </li>
+    }
+  </ul>
+</section>

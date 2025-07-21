@@ -1,0 +1,26 @@
+.waiting-game, .game {
+    background-color: #1e1e1e;
+    border: 1px solid #cc222c;
+    border-left: 6px solid #d4ba7f;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin: 1rem 0;
+    transition:
+        background-color 0.3s ease,
+        transform 0.2s ease;
+}
+
+.game:hover {
+    background-color: #292929;
+}
+
+h3.game {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #007a89;
+}
+
+h3.game.open,
+.open {
+    border-left: 6px solid #abf7dd;
+}
