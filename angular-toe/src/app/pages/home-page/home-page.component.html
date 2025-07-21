@@ -9,9 +9,7 @@ Create
   <ul>
     @for (game of waiting_games; track $index) {
     <li>
-      <p>
-        <app-waiting-game-card [game]="game" [acceptGame]="makeAcceptGame(game)"></app-waiting-game-card>
-      </p>
+      <app-waiting-game-card [game]="game" [acceptGame]="makeAcceptGame(game)"></app-waiting-game-card>
     </li>
     }
   </ul>
@@ -22,9 +20,9 @@ Create
   <ul>
     @for (game of active_games; track $index) {
     <li>
-      <p>
-        {{game.id}}
-      </p>
+      <div>
+      <app-game-card [game]="game"></app-game-card>
+      </div>
     </li>
     }
   </ul>

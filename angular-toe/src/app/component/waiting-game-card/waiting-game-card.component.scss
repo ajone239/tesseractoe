@@ -1,6 +1,6 @@
 .waiting-game, .game {
     background-color: #1e1e1e;
-    border: 1px solid #cc222c;
+    border: 1px solid #2cc22c;
     border-left: 6px solid #d4ba7f;
     border-radius: 0.5rem;
     padding: 1rem;
@@ -17,10 +17,20 @@
 h3.game {
     margin: 0;
     font-size: 1.25rem;
-    color: #007a89;
+    color: #00a789;
 }
 
 h3.game.open,
 .open {
     border-left: 6px solid #abf7dd;
+}
+
+button {
+  background-color: #1e1e1e;
+  color: #fff;
+  border: 1px solid #2c2c2c;
+  border-right: 4px solid #d4ba7f;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 1rem 0;
 }

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Game } from '../models/game';
+import { timer, switchMap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -26,5 +27,11 @@ export class GamesService {
     const game = await response.json();
 
     return game ?? {};
+  }
+
+  pollAllGames() {
+    return timer(0, 2000).pipe(
+      switchMap(() => this.getAllGames())
+    );
   }
 }

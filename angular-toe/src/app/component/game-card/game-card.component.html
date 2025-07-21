@@ -1,1 +1,7 @@
-<p>game-card works!</p>
+<section class="waiting-game">
+  <h3 class="game">Game: {{ game().id }}</h3>
+  <p>{{ game().game_state }}</p>
+  <p>Player 1: {{game().player1_id}}</p>
+  <p>Player 2: {{game().player2_id}}</p>
+</section>
+
