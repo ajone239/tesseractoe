@@ -32,4 +32,8 @@ export class HomePageComponent {
       alert(game.id)
     }
   }
+
+  createGame() {
+    alert("Created")
+  }
 }
