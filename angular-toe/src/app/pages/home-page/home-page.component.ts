@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { GamesService } from '../../services/games.service';
@@ -16,8 +16,9 @@ import { PlayerInfo } from '../../services/player-info.service';
   styleUrl: './home-page.component.scss'
 })
 export class HomePageComponent {
-  playerIdService = inject(PlayerInfo)
-  gameService = inject(GamesService);
+  private playerIdService = inject(PlayerInfo);
+  private gameService = inject(GamesService);
+  private router = inject(Router);
 
   playerId: string = this.playerIdService.getPlayerId();
   games: Game[] = [];
@@ -53,8 +54,17 @@ export class HomePageComponent {
     }
   }
 
-  createGame() {
-    alert("Created")
+  async createGame() {
+    const new_game = await this.gameService.createGame(this.playerId);
+
+    if (!new_game) {
+      alert("creation failed")
+      return;
+    }
+
+    const new_id = new_game.id;
+
+    this.router.navigate(['/waiting', new_id]);
   }
 
   private processGames(games: Game[]) {
