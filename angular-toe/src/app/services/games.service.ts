@@ -47,6 +47,32 @@ export class GamesService {
     return game;
   }
 
+  async acceptGame(game_id: string, player_id: string):
+    Promise<{
+      success: boolean,
+      error: string | null
+    }> {
+    const request = {
+      player2_id: player_id
+    };
+
+    const url = `http://localhost:3000/games/${game_id}/accept`;
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(request)
+    });
+
+    if (res.status == 404) {
+      return { success: false, error: 'Accept failed: bad id' };
+    }
+
+    return { success: true, error: null };
+  }
+
   pollAllGames() {
     return timer(0, 1000).pipe(
       switchMap(() => this.getAllGames())

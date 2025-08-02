@@ -49,8 +49,14 @@ export class HomePageComponent {
   }
 
   makeAcceptGame(game: Game) {
-    return () => {
-      alert(game.id + " " + this.playerId)
+    return async () => {
+      const { success, error } = await this.gameService.acceptGame(game.id, this.playerId);
+
+      if (!success) {
+        alert(error ?? "Failed to accept")
+      }
+
+      this.router.navigate(['/play', game.id]);
     }
   }
 
