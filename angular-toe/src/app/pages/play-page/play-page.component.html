@@ -1,1 +1,20 @@
-<p>play-page works on id {{ game_id }}!</p>
+<h1>Playing game: {{ game_id }}!</h1>
+
+@if (!game) {
+<p>There were problems loading the game.</p>
+} @else {
+
+<app-board [game]="game" [makeCellClick]="makeCellClick"></app-board>
+
+<div>
+
+  <p> Game has status {{ game.game_state }} </p>
+
+  @if (game.player1_id == playerId) {
+  <p> Opponent is {{ game.player2_id}} </p>
+  } @else {
+  <p> Opponent is {{ game.player1_id}} </p>
+  }
+</div>
+
+}

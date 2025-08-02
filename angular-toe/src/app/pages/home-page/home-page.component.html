@@ -6,7 +6,6 @@ New Game
 
 <section class="waiting-games">
 <h3> Waiting Games </h3>
-  @if (waiting_games.length > 0) {
   <ul>
     @for (game of waiting_games; track $index) {
     <li>
@@ -14,18 +13,14 @@ New Game
         <app-waiting-game-card [game]="game" [acceptGame]="makeAcceptGame(game)"></app-waiting-game-card>
       </p>
     </li>
+    } @empty {
+    <li aria-hidden="true"> There are no items. </li>
     }
   </ul>
-  } @else {
-    <p>
-      Sorry, no games :(.
-    </p>
-  }
 </section>
 
 <section class="active-games">
 <h3> Active Games </h3>
-  @if (active_games.length > 0) {
   <ul>
     @for (game of active_games; track $index) {
     <li>
@@ -34,11 +29,8 @@ New Game
         <app-game-card [game]="game"></app-game-card>
       </p>
     </li>
+    } @empty {
+    <li aria-hidden="true"> There are no items. </li>
     }
   </ul>
-  } @else {
-    <p>
-      Sorry, no games :(.
-    </p>
-  }
 </section>

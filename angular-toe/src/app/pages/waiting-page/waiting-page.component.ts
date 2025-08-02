@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GamesService } from '../../services/games.service';
 import { Subscription } from 'rxjs';
+import { Game } from '../../models/game';
 
 @Component({
   selector: 'app-waiting-page',
@@ -26,20 +27,9 @@ export class WaitingPageComponent {
 
   ngOnInit() {
     this.sub.add(
-      this.gameService.pollGame(this.game_id).subscribe(
-        game => {
-          this.seconds_waited++;
-
-          if (game == null) {
-            return;
-          }
-
-          this.game_status = game.game_state;
-
-          if (game.game_state == 'Playing') {
-            this.router.navigate(['/play/', game.id]);
-          }
-        })
+      this.gameService
+        .pollGame(this.game_id)
+        .subscribe(this.process_game)
     );
   }
 
@@ -49,5 +39,19 @@ export class WaitingPageComponent {
 
   seconds_to_dots(): string {
     return ".".repeat(this.seconds_waited % 4);
+  }
+
+  private process_game(game: Game | undefined) {
+    this.seconds_waited++;
+
+    if (game == null) {
+      return;
+    }
+
+    this.game_status = game.game_state;
+
+    if (game.game_state == 'Playing') {
+      this.router.navigate(['/play/', game.id]);
+    }
   }
 }

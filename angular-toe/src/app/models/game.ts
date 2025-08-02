@@ -9,7 +9,7 @@
  * }
  */
 
-type OptionU8 = number | null;
+export type OptionU8 = number | null;
 
 export type Game = {
   id: string,

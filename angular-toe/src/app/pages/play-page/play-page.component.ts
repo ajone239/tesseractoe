@@ -1,18 +1,60 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { GamesService } from '../../services/games.service';
+import { Subscription } from 'rxjs';
+import { Game } from '../../models/game';
+import { PlayerInfo } from '../../services/player-info.service';
+import { BoardComponent } from '../../component/board/board.component';
 
 @Component({
   selector: 'app-play-page',
-  imports: [],
+  imports: [BoardComponent],
   templateUrl: './play-page.component.html',
   styleUrl: './play-page.component.scss'
 })
 export class PlayPageComponent {
+  private playerIdService = inject(PlayerInfo);
+  private gameService = inject(GamesService);
+  private sub = new Subscription();
+
   route: ActivatedRoute = inject(ActivatedRoute);
 
-  game_id = -1;
+  playerId: string = this.playerIdService.getPlayerId();
+  game_id: string;
+  game: Game | undefined;
+  seconds_waited: number = 0;
 
   constructor() {
-    this.game_id = Number(this.route.snapshot.params['id']);
+    this.game_id = this.route.snapshot.params['id'];
+    this.gameService.getGame(this.game_id)
+      .then(game => {
+        this.game = game
+      });
+  }
+
+  ngOnInit() {
+    this.sub.add(
+      this.gameService
+        .pollGame(this.game_id)
+        .subscribe(this.process_game)
+    );
+  }
+
+  ngOnDestroy() {
+    this.sub.unsubscribe()
+  }
+
+  private process_game(game: Game | undefined) {
+    if (game == null) {
+      return;
+    }
+
+    this.game = game;
+  }
+
+  makeCellClick(id: number) {
+    return async () => {
+      alert(id);
+    }
   }
 }
