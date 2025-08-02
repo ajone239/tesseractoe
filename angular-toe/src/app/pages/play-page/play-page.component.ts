@@ -36,7 +36,7 @@ export class PlayPageComponent {
     this.sub.add(
       this.gameService
         .pollGame(this.game_id)
-        .subscribe(this.process_game)
+        .subscribe(game => this.process_game(game))
     );
   }
 
@@ -44,16 +44,10 @@ export class PlayPageComponent {
     this.sub.unsubscribe()
   }
 
-  private process_game = (game: Game | undefined) => {
+  private process_game(game: Game | undefined) {
     if (!game) return;
 
-    // Clone the player_moves array to force change detection
-    const clonedGame: Game = {
-      ...game,
-      player_moves: [...game.player_moves]
-    };
-
-    this.game = clonedGame;
+    this.game = game;
   }
 
 

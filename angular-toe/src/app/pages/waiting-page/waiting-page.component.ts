@@ -29,7 +29,7 @@ export class WaitingPageComponent {
     this.sub.add(
       this.gameService
         .pollGame(this.game_id)
-        .subscribe(this.process_game)
+        .subscribe(game => this.process_game(game))
     );
   }
 
@@ -42,7 +42,6 @@ export class WaitingPageComponent {
   }
 
   private process_game(game: Game | undefined) {
-    console.log("processing");
     this.seconds_waited++;
 
     if (game == null) {
