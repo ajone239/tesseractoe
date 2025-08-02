@@ -24,9 +24,9 @@ export class HomePageComponent {
 
   constructor() {
     this.gameService.getAllGames()
-    .then(data => {
-      this.processGames(data);
-    });
+      .then(data => {
+        this.processGames(data);
+      });
   }
 
   ngOnInit() {
