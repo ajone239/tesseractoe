@@ -6,24 +6,39 @@ Create
 
 <section class="waiting-games">
 <h2> Waiting Games </h2>
+  @if (waiting_games.length > 0) {
   <ul>
     @for (game of waiting_games; track $index) {
     <li>
-      <app-waiting-game-card [game]="game" [acceptGame]="makeAcceptGame(game)"></app-waiting-game-card>
+      <p>
+        <app-waiting-game-card [game]="game" [acceptGame]="makeAcceptGame(game)"></app-waiting-game-card>
+      </p>
     </li>
     }
   </ul>
+  } @else {
+    <p>
+      Sorry, no games :(.
+    </p>
+  }
 </section>
 
 <section class="active-games">
 <h2> Active Games </h2>
+  @if (active_games.length > 0) {
   <ul>
     @for (game of active_games; track $index) {
     <li>
-      <div>
-      <app-game-card [game]="game"></app-game-card>
-      </div>
+      <p>
+        {{game.id}}
+        <app-game-card [game]="game"></app-game-card>
+      </p>
     </li>
     }
   </ul>
+  } @else {
+    <p>
+      Sorry, no games :(.
+    </p>
+  }
 </section>

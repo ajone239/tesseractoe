@@ -34,4 +34,10 @@ export class GamesService {
       switchMap(() => this.getAllGames())
     );
   }
+
+  pollGame(game_id: string) {
+    return timer(0, 2000).pipe(
+      switchMap(() => this.getGame(game_id))
+    );
+  }
 }
