@@ -4,9 +4,11 @@ import sys
 
 BASE_URL = "http://127.0.0.1:3000"
 
+
 def create_game():
     player1_id = str(uuid.uuid4())  # Generate a random player ID
-    response = requests.post(f"{BASE_URL}/games", json={"player1_id": player1_id})
+    response = requests.post(
+        f"{BASE_URL}/games", json={"player1_id": player1_id})
     if response.status_code == 201:
         game = response.json()
         print(f"Game created: {game['id']}")
@@ -15,12 +17,15 @@ def create_game():
         print(f"Error creating game: {response.text}")
         return None, None
 
+
 def accept_game(game_id, player2_id):
-    response = requests.post(f"{BASE_URL}/games/{game_id}/accept", json={"player2_id": player2_id})
+    response = requests.post(
+        f"{BASE_URL}/games/{game_id}/accept", json={"player2_id": player2_id})
     if response.status_code == 202:
         print(f"Game {game_id} accepted by player {player2_id}")
     else:
         print(f"Error accepting game: {response.text}")
+
 
 def get_game_status(game_id):
     response = requests.get(f"{BASE_URL}/games/{game_id}/status")
@@ -30,14 +35,25 @@ def get_game_status(game_id):
     else:
         print(f"Error fetching game status: {response.text}")
 
+
 def play_game(game_id, player_id, player_move):
-    response = requests.patch(f"{BASE_URL}/games/{game_id}/play", json={"player_id": player_id, "player_move": player_move})
+    response = requests.patch(
+        f"{BASE_URL}/games/{game_id}/play",
+        json={
+            "player_id": player_id,
+            "player_move": player_move
+        }
+    )
+
     if response.status_code == 202:
-        print(f"Player {player_id} played move {player_move} in game {game_id}")
+        print(
+            f"Player {player_id} played move {player_move} in game {game_id}"
+        )
     else:
         print(f"Error playing move: {response.text}")
 
-if __name__ == "__main__":
+
+def play_full_game():
     game_id, player1_id = create_game()
     if not game_id:
         sys.exit()
@@ -69,8 +85,12 @@ if __name__ == "__main__":
 
     print()
 
-    play_game(game_id, player2_id, 7) # Shouldnt work
+    play_game(game_id, player2_id, 7)  # Shouldnt work
 
     print()
 
     get_game_status(game_id)
+
+
+if __name__ == "__main__":
+    play_full_game()
