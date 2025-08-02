@@ -1,11 +1,11 @@
 <h1> Home </h1>
 
 <button (click)="createGame()">
-Create
+New Game
 </button>
 
 <section class="waiting-games">
-<h2> Waiting Games </h2>
+<h3> Waiting Games </h3>
   @if (waiting_games.length > 0) {
   <ul>
     @for (game of waiting_games; track $index) {
@@ -24,7 +24,7 @@ Create
 </section>
 
 <section class="active-games">
-<h2> Active Games </h2>
+<h3> Active Games </h3>
   @if (active_games.length > 0) {
   <ul>
     @for (game of active_games; track $index) {

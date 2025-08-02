@@ -6,6 +6,7 @@ import { GamesService } from '../../services/games.service';
 import { Game } from '../../models/game';
 import { WaitingGameCardComponent } from '../../component/waiting-game-card/waiting-game-card.component';
 import { GameCardComponent } from '../../component/game-card/game-card.component';
+import { PlayerInfo } from '../../services/player-info.service';
 
 
 @Component({
@@ -15,7 +16,10 @@ import { GameCardComponent } from '../../component/game-card/game-card.component
   styleUrl: './home-page.component.scss'
 })
 export class HomePageComponent {
+  playerIdService = inject(PlayerInfo)
   gameService = inject(GamesService);
+
+  playerId: string = this.playerIdService.getPlayerId();
   games: Game[] = [];
   waiting_games: Game[] = [];
   active_games: Game[] = [];
@@ -45,7 +49,7 @@ export class HomePageComponent {
 
   makeAcceptGame(game: Game) {
     return () => {
-      alert(game.id)
+      alert(game.id + " " + this.playerId)
     }
   }
 
