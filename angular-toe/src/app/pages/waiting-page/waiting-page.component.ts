@@ -42,6 +42,7 @@ export class WaitingPageComponent {
   }
 
   private process_game(game: Game | undefined) {
+    console.log("processing");
     this.seconds_waited++;
 
     if (game == null) {

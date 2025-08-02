@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { GamesService } from '../../services/games.service';
 import { Subscription } from 'rxjs';
@@ -23,10 +23,8 @@ export class PlayPageComponent {
   game_id: string;
   game: Game | undefined;
   seconds_waited: number = 0;
-  cd: ChangeDetectorRef;
 
-  constructor(cd: ChangeDetectorRef) {
-    this.cd = cd;
+  constructor() {
     this.game_id = this.route.snapshot.params['id'];
     this.gameService.getGame(this.game_id)
       .then(game => {
@@ -46,16 +44,18 @@ export class PlayPageComponent {
     this.sub.unsubscribe()
   }
 
-  private process_game(game: Game | undefined) {
-    if (!game) {
-      return;
-    }
-    console.log("update")
-    console.log(game.player_moves)
+  private process_game = (game: Game | undefined) => {
+    if (!game) return;
 
-    this.game = game;
-    this.cd.markForCheck();
+    // Clone the player_moves array to force change detection
+    const clonedGame: Game = {
+      ...game,
+      player_moves: [...game.player_moves]
+    };
+
+    this.game = clonedGame;
   }
+
 
   async onCellClick(id: number) {
     const { success, error } = await this.gameService.playGame(
