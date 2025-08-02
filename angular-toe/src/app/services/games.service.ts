@@ -73,6 +73,34 @@ export class GamesService {
     return { success: true, error: null };
   }
 
+  async playGame(game_id: string, player_id: string, player_move: number):
+    Promise<{
+      success: boolean,
+      error: string | null
+    }> {
+    const request = {
+      player_id,
+      player_move,
+    };
+
+    const url = `http://localhost:3000/games/${game_id}/play`;
+
+    const res = await fetch(url, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(request)
+    });
+
+    if (res.status != 202) {
+      const err_text = await res.text();
+      return { success: false, error: err_text };
+    }
+
+    return { success: true, error: null }
+  }
+
   pollAllGames() {
     return timer(0, 1000).pipe(
       switchMap(() => this.getAllGames())

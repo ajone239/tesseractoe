@@ -4,7 +4,7 @@
 <p>There were problems loading the game.</p>
 } @else {
 
-<app-board [game]="game" [makeCellClick]="makeCellClick"></app-board>
+<app-board [game]="game" (cellClicked)="onCellClick($event)"></app-board>
 
 <div>
 

@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { OptionU8 } from '../../models/game';
 
 @Component({
@@ -10,8 +10,12 @@ import { OptionU8 } from '../../models/game';
 export class CellComponent {
   id = input.required<number>();
   player_moves = input.required<OptionU8[]>();
-  click = input.required<() => void>();
 
+  cellClicked = output<number>();
+
+  handleClick() {
+    this.cellClicked.emit(this.id());
+  }
 
   cellText(): string {
     let idx = this.player_moves().indexOf(this.id());

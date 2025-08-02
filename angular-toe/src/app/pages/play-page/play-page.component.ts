@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { GamesService } from '../../services/games.service';
 import { Subscription } from 'rxjs';
@@ -23,8 +23,10 @@ export class PlayPageComponent {
   game_id: string;
   game: Game | undefined;
   seconds_waited: number = 0;
+  cd: ChangeDetectorRef;
 
-  constructor() {
+  constructor(cd: ChangeDetectorRef) {
+    this.cd = cd;
     this.game_id = this.route.snapshot.params['id'];
     this.gameService.getGame(this.game_id)
       .then(game => {
@@ -45,16 +47,29 @@ export class PlayPageComponent {
   }
 
   private process_game(game: Game | undefined) {
-    if (game == null) {
+    if (!game) {
       return;
     }
+    console.log("update")
+    console.log(game.player_moves)
 
     this.game = game;
+    this.cd.markForCheck();
   }
 
-  makeCellClick(id: number) {
-    return async () => {
-      alert(id);
+  async onCellClick(id: number) {
+    const { success, error } = await this.gameService.playGame(
+      this.game_id,
+      this.playerId,
+      id,
+    );
+
+    if (!success) {
+      alert(error);
     }
+
+    const game = await this.gameService.getGame(this.game_id)
+
+    this.game = game;
   }
 }

@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { Game } from '../../models/game';
 import { CellComponent } from '../cell/cell.component';
 
@@ -12,5 +12,9 @@ export class BoardComponent {
   counts = [...Array(4).keys()];
 
   game = input.required<Game>();
-  makeCellClick = input.required<(id: number) => () => void>();
+  cellClicked = output<number>();
+
+  handleClick(id: number) {
+    this.cellClicked.emit(id);
+  }
 }
