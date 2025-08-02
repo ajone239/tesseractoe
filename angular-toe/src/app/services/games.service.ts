@@ -20,7 +20,7 @@ export class GamesService {
   }
 
   async getGame(game_id: string): Promise<Game | undefined> {
-    const request_url = `${this.base_url}/${game_id}`;
+    const request_url = `${this.base_url}/${game_id}/status`;
 
     const response = await fetch(request_url);
 
@@ -29,14 +29,32 @@ export class GamesService {
     return game ?? {};
   }
 
+  async createGame(player_id: string): Promise<Game | undefined> {
+    const request = {
+      player1_id: player_id
+    };
+
+    const res = await fetch('http://localhost:3000/games', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(request)
+    });
+
+    const game = await res.json();
+
+    return game;
+  }
+
   pollAllGames() {
-    return timer(0, 2000).pipe(
+    return timer(0, 1000).pipe(
       switchMap(() => this.getAllGames())
     );
   }
 
   pollGame(game_id: string) {
-    return timer(0, 2000).pipe(
+    return timer(0, 1000).pipe(
       switchMap(() => this.getGame(game_id))
     );
   }
