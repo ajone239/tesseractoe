@@ -322,7 +322,7 @@ export class Home {
         );
     }
 }
-    ```
+```
 
 ```scss
 .results {
