@@ -5,7 +5,6 @@ export default function Home() {
                 hello world
             </p>
             <a href="/play/test-id-0000">
-
                 play
             </a>
             <a href="/wait/test-id-0001">
