@@ -212,6 +212,8 @@ There was good stuff.
 
 - Events, I didn't like that they stepped away from what feels like a very Javascript-y pattern.
 
+- The reactivity was implicit. I didn't like that. It seems like `signal()` and `computed()` make the model more svelte-y, but that isn't what the tutorial on the website teaches.
+
 - All these frameworks have their own little mark up extensions on either html or ts/js. I personally found angular's to be the most annoying.
 
 ```angular
