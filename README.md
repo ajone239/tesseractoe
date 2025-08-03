@@ -216,7 +216,7 @@ There was good stuff.
 
 - All these frameworks have their own little mark up extensions on either html or ts/js. I personally found angular's to be the most annoying.
 
-```angular
+```ts
 <h1>Playing game: {{ game_id }}!</h1>
 
 <!-- @if, @for, @switch makes enough sense -->
@@ -247,13 +247,13 @@ There was good stuff.
 
 - You have to use full tags the whole time. Something about the angular parser prevents on from using:
 
-```angular
+```ts
 <app-board [game]="game" (cellClicked)="onCellClick($event)" />
 ```
 
 so you must
 
-```angular
+```ts
 <app-board [game]="game" (cellClicked)="onCellClick($event)"></app-board>
 ```
 
@@ -285,7 +285,7 @@ This often boils out to editing with an eye on `ng server`/`ng build` to make su
 
     + Have atleast 2 (but more often 3) files open
 
-    ```angular
+    ```ts
     import { Component, inject } from '@angular/core';
     import { HousingLocation } from '../housing-location/housing-location';
     import { HousingLocationInfo } from '../housinglocation';
@@ -368,7 +368,7 @@ This often boils out to editing with an eye on `ng server`/`ng build` to make su
 
     + edit html/css in a string literal in a js file like a caveman
 
-    ```angular
+    ```ts
     import { Component, inject } from '@angular/core';
     import { HousingLocation } from '../housing-location/housing-location';
     import { HousingLocationInfo } from '../housinglocation';
