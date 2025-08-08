@@ -24,3 +24,7 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+button {
+    @apply ml-5 rounded-md bg-amber-400 p-1 text-yellow-950 hover:bg-amber-300 border-white hover:border-2;
+}
