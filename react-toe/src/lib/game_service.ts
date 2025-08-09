@@ -23,7 +23,7 @@ export abstract class GamesService {
     }
 
     static async createGame(request: CreateGame): Promise<Game | undefined> {
-        const res = await fetch(`${GamesService.base_url}/games`, {
+        const res = await fetch(`${GamesService.base_url}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -48,8 +48,9 @@ export abstract class GamesService {
             body: JSON.stringify(request)
         });
 
-        if (res.status == 404) {
-            return { success: false, error: 'Accept failed: bad id' };
+        if (res.status != 202) {
+            const err_text = await res.text();
+            return { success: false, error: 'Accept failed: ' + err_text };
         }
 
         return { success: true, error: null };

@@ -1,11 +1,11 @@
 'use client'
 
-import { CreateGame, Game } from "@/types/game";
+import { AcceptGame, CreateGame, Game } from "@/types/game";
 import { GamesService } from "@/lib/game_service";
 import { useEffect, useState } from "react";
 import GameCard from "@/components/GameCard";
 import OpenGameCard from "@/components/OpenGameCard";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 const pollingTimeout: number = 1000;
 
@@ -42,6 +42,7 @@ export default function Home() {
     }, []);
 
     const createGame = async () => {
+        console.log(playerId)
         const request: CreateGame = {
             player1_id: playerId,
         }
@@ -53,16 +54,32 @@ export default function Home() {
             return;
         }
 
-
-
+        router.push("/wait/" + game.id);
     };
+
+    const makeAcceptGame = (gameId: string): () => void => {
+        return async () => {
+            const request: AcceptGame = {
+                player2_id: playerId
+            };
+
+            const res = await GamesService.acceptGame(gameId, request);
+
+            if (!res.success) {
+                alert(res.error)
+                return;
+            }
+
+            router.push('/play/' + gameId);
+        }
+    }
 
     const openGames = games
         .filter(g => !g.player2_id)
         .map(game => (
             <li key={game.id}>
                 <OpenGameCard
-                    acceptGame={() => alert(game.id)}
+                    acceptGame={makeAcceptGame(game.id)}
                     game={game} />
             </li>
         ));
@@ -78,7 +95,7 @@ export default function Home() {
     return (
         <>
             <div>
-                <button onClick={() => createGame()}>
+                <button className="menu-button" onClick={() => createGame()}>
                     Create New Game
                 </button>
 

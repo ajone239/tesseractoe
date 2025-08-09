@@ -18,7 +18,7 @@ export default function OpenGameCard({ game, acceptGame }: Props) {
                 <b>Player 1</b>: {game.player1_id}
             </p>
             <div className="flex justify-end items-end">
-                <button onClick={() => acceptGame()}>
+                <button className="menu-button" onClick={() => acceptGame()}>
                     Accept Game
                 </button>
             </div>
