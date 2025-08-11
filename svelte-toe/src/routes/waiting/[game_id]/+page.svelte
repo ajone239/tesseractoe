@@ -11,8 +11,10 @@
     let interval: NodeJS.Timeout;
 
     let game: Game | null = $state(null);
+    let waitingTime: number = $state(0);
 
     const status_game = async () => {
+        waitingTime++;
         if (game_id == undefined) {
             return;
         }
@@ -33,7 +35,7 @@
 
     onMount(() => {
         player_id = localStorage.getItem('playerId');
-        interval = setInterval(status_game, 500); // poll every 5 sec
+        interval = setInterval(status_game, 1000); // poll every 5 sec
     });
 
     onDestroy(() => {
@@ -42,6 +44,10 @@
 </script>
 
 <h2>Waiting for game {game_id}...</h2>
+
+<p>
+    waiting for {waitingTime}{'.'.repeat(waitingTime % 4)}
+</p>
 
 {#if game}
     <p>Game has status {game.game_state}</p>
