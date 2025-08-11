@@ -11,6 +11,12 @@ export default function Play() {
     const { id } = useParams<{ id: string }>();
 
     const [game, setGame] = useState<Game | null>(null)
+    const [playerId, setPlayerId] = useState<string>("blah blah blah");
+
+    useEffect(() => {
+        setPlayerId(localStorage.getItem('playerId') ?? "bad id")
+    }, [])
+
 
     useEffect(() => {
         let isMounted = true;
@@ -20,14 +26,7 @@ export default function Play() {
         const pollGame = async () => {
             if (!isMounted) return;
 
-            let game = await GamesService.getGame(id);
-
-            if (!game) {
-                alert("Failed to grab game");
-                return
-            }
-
-            setGame(game);
+            await statusGame();
 
             timeoutId = setTimeout(pollGame, pollingTimeout);
         };
@@ -40,35 +39,47 @@ export default function Play() {
         }
     }, []);
 
-    const handleClick = (id: number) => {
-        alert(id)
+    const statusGame = async () => {
+        let game = await GamesService.getGame(id);
+
+        if (!game) {
+            alert("Failed to grab game");
+            return
+        }
+
+        setGame(game);
     }
 
-    const board_text = [
-        'O',
-        'X',
-        'O',
-        'X',
-        'O',
-        'X',
-        'O',
-        'X',
-        'O',
-        'X',
-        'O',
-        'X',
-        'O',
-        'X',
-        'O',
-        'X',
-        'O',
-        'X',
-    ]
+    const handleClick = async (id: number) => {
+        const request = {
+            player_id: playerId,
+            player_move: id
+        };
+
+        if (!game) {
+            alert("No game to play :/");
+            return;
+        }
+
+        const res = await GamesService.playGame(game.id, request);
+
+        if (!res.success) {
+            alert(res.error);
+            return;
+        }
+
+        await statusGame()
+    };
 
     return (
         <>
             <h1> Playing Game: {id} </h1>
-            <Board board_text={board_text} onClick={handleClick} />
+            <p> Game State: {game?.game_state ?? "null"} </p>
+            {
+                game ?
+                    <Board player_moves={game.player_moves} onClick={handleClick} /> :
+                    <p> Sorry no game :( </p>
+            }
         </>
 
     );

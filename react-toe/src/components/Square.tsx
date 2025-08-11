@@ -9,7 +9,7 @@ export default function Square({ text, id, onClick: onClick }: Props) {
         <>
             <button
                 onClick={() => onClick(id)}
-                className="relative bg-gray-700 w-[6em] h-[6em] text-center align-middle rounded-[0.5em] m-[0.25em] border-gray-300 border-1">
+                className="relative bg-gray-700 w-[6em] h-[6em] text-center align-middle rounded-[0.5em] m-[0.25em] border-gray-500 border-2 hover:border-gray-100 active:bg-gray-500">
                 <span className="main-text relative z-[1] text-center w-[5em] font-mono text-[3em]">
                     {text}
                 </span>

@@ -57,21 +57,19 @@ export default function Home() {
         router.push("/wait/" + game.id);
     };
 
-    const makeAcceptGame = (gameId: string): () => void => {
-        return async () => {
-            const request: AcceptGame = {
-                player2_id: playerId
-            };
+    const acceptGame = async (gameId: string) => {
+        const request: AcceptGame = {
+            player2_id: playerId
+        };
 
-            const res = await GamesService.acceptGame(gameId, request);
+        const res = await GamesService.acceptGame(gameId, request);
 
-            if (!res.success) {
-                alert(res.error)
-                return;
-            }
-
-            router.push('/play/' + gameId);
+        if (!res.success) {
+            alert(res.error)
+            return;
         }
+
+        router.push('/play/' + gameId);
     }
 
     const openGames = games
@@ -79,7 +77,7 @@ export default function Home() {
         .map(game => (
             <li key={game.id}>
                 <OpenGameCard
-                    acceptGame={makeAcceptGame(game.id)}
+                    acceptGame={() => acceptGame(game.id)}
                     game={game} />
             </li>
         ));
