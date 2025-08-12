@@ -3,12 +3,14 @@
     import Cell from '../Cell.svelte';
     import type { Game } from '$lib/game.ts';
 
+    const size = 4;
+
     const data = $props();
 
     let { game_id } = data.data;
 
     let player_id: string | null;
-    let interval: NodeJS.Timeout;
+    let interval: number;
 
     let game: Game | null = $state(null);
 
@@ -26,9 +28,6 @@
      * - disable ui if not your turn
      * - signify turn in ui
      */
-
-    const size = 4;
-    const counts = [...Array(size).keys()];
 
     const status_game = async () => {
         if (game_id == undefined) {
@@ -50,30 +49,28 @@
         clearInterval(interval);
     });
 
-    const make_onclick = (id: number) => {
-        return async () => {
-            const request = {
-                player_id: player_id,
-                player_move: id
-            };
-
-            const url = `http://localhost:3000/games/${game_id}/play`;
-
-            const res = await fetch(url, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(request)
-            });
-
-            if (res.status != 202) {
-                const err_text = await res.text();
-                alert(err_text);
-            }
-
-            status_game();
+    const onclick = async (id: number) => {
+        const request = {
+            player_id: player_id,
+            player_move: id
         };
+
+        const url = `http://localhost:3000/games/${game_id}/play`;
+
+        const res = await fetch(url, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(request)
+        });
+
+        if (res.status != 202) {
+            const err_text = await res.text();
+            alert(err_text);
+        }
+
+        status_game();
     };
 </script>
 
@@ -85,13 +82,13 @@
     <div class="opponent name"></div>
 
     <div class="game-board">
-        {#each counts as row (row)}
+        {#each { length: size }, row (row)}
             <div class="game-row">
-                {#each counts as col (col)}
+                {#each { length: size }, col (col)}
                     <Cell
                         id={row * size + col}
                         game_state={player_moves}
-                        onclick={make_onclick(row * size + col)}
+                        onclick={() => onclick(row * size + col)}
                     />
                 {/each}
             </div>

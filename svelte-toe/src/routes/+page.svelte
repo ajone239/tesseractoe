@@ -4,7 +4,7 @@
     import { onMount, onDestroy } from 'svelte';
 
     let playerId: string | null = $state('');
-    let interval: NodeJS.Timeout;
+    let interval: number;
 
     let games: Game[] = $state([]);
     let open_games = $derived(games.filter((g) => !g.player2_id));
@@ -30,14 +30,32 @@
             body: JSON.stringify(request)
         });
 
-        console.log('Austin');
-        console.log(res);
-
         const game = await res.json();
-        console.log(game);
-        console.log(game.id);
 
         goto('/waiting/' + game.id);
+    };
+
+    const accept_game = async (game_id: string) => {
+        const request = {
+            player2_id: playerId
+        };
+
+        const url = `http://localhost:3000/games/${game_id}/accept`;
+
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(request)
+        });
+
+        if (res.status == 404) {
+            alert('Accept failed: bad id');
+            return;
+        }
+
+        goto('/play/' + game_id);
     };
 
     onMount(() => {
@@ -59,30 +77,7 @@
     <div class="game open">
         <h3 class="game open">Game: {game.id}</h3>
         <p>Opponent: {game.player1_id}</p>
-        <button
-            onclick={async () => {
-                const request = {
-                    player2_id: playerId
-                };
-
-                const url = `http://localhost:3000/games/${game.id}/accept`;
-
-                const res = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(request)
-                });
-
-                if (res.status == 404) {
-                    alert('Accept failed: bad id');
-                    return;
-                }
-
-                goto('/play/' + game.id);
-            }}>Accept</button
-        >
+        <button onclick={() => accept_game(game.id)}>Accept</button>
     </div>
 {:else}
     <p>No items found.</p>
