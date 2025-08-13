@@ -444,3 +444,19 @@ This often boils out to editing with an eye on `ng server`/`ng build` to make su
         }
     }
     ```
+
+# React
+
+## What I liked
+
+- It's react -- it's nice to use.
+- Turbopack is fast
+- Next.js is nice and comfy
+- Tailwind is pretty frickin' nice
+
+## What I didn't
+
+- Feels dated
+- `useEffect` and `useState` are archaic
+- Legacy warts
+- Some data management felt awkward.
